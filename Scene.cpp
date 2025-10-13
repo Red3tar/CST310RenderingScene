@@ -6,43 +6,43 @@
 #endif
 #include <cmath>
 
+// Camera controls
+float cameraX = 0.0f;
+float cameraY = 0.0f;
+float zoomLevel = 1.0f;
+
+// Camera boundaries
+const float MIN_X = -0.5f;
+const float MAX_X = 0.5f;
+const float MIN_Y = -1.0f;
+const float MAX_Y = 1.0f;
+
 void drawChair(float centerX, float baseY, bool facingRight) {
-    // DIMENSIONS - all the measurements
     float seatWidth = 0.28f;              
     float seatTopThickness = 0.04f;       
     float seatFrontEdgeHeight = 0.035f;   
     float backrestWidth = 0.26f;          
     float backrestHeight = 0.3f;         
     float backrestThickness = 0.025f;     
-    float legWidth = 0.012f;              // MADE MUCH THINNER - thin metal rods
+    float legWidth = 0.012f;
     float legHeight = 0.28f;              
     float perspectiveOffset = 0.08f;     
     float tiltOffset = 0.02f;             
     float tiltDir = facingRight ? -tiltOffset : tiltOffset;
-    float legInset = 0.0f;               // Distance from seat edge to leg
+    float legInset = 0.0f;
     
-    // Calculate leg positions at the 4 CORNERS of the seat
-    // The seat itself has perspective - front is wider, back is narrower
-    // So legs need to match where the seat corners actually are
-    
-    // FRONT leg positions (at the FRONT/BOTTOM edge of seat)
     float frontLeftLegX = centerX - seatWidth/2 + legInset + (facingRight ? perspectiveOffset : 0);
     float frontRightLegX = centerX + seatWidth/2 - legInset - (facingRight ? 0 : perspectiveOffset);
-    
-    // BACK leg positions (at the BACK/TOP edge of seat - narrower due to perspective)
     float backLeftLegX = centerX - seatWidth/2 + legInset + (facingRight ? 0 : perspectiveOffset);
     float backRightLegX = centerX + seatWidth/2 - legInset - (facingRight ? perspectiveOffset : 0);
     
-    float frontLegY = baseY;                    // Front legs at base
-    float backLegY = baseY + legHeight * 0.08f; // Back legs slightly higher (perspective)
+    float frontLegY = baseY;
+    float backLegY = baseY + legHeight * 0.08f;
     
-    // ========== LEGS (4 vertical rectangles - proper 4-legged chair) ==========
-    glColor3f(0.70f, 0.70f, 0.70f);  // Metallic gray
+    // ========== LEGS (metallic silver) ==========
+    glColor3f(0.75f, 0.75f, 0.78f);  // Silvery metal
     
     if (facingRight) {
-        // LEFT-FACING CHAIR - show left side legs prominently
-        
-        // SHAPE 1: FRONT-LEFT leg (most visible, front corner)
         glBegin(GL_QUADS);
             glVertex2f(frontLeftLegX, frontLegY);
             glVertex2f(frontLeftLegX + legWidth, frontLegY);
@@ -50,7 +50,6 @@ void drawChair(float centerX, float baseY, bool facingRight) {
             glVertex2f(frontLeftLegX, frontLegY + legHeight);
         glEnd();
         
-        // SHAPE 2: BACK-LEFT leg (visible, back corner on left side)
         glBegin(GL_QUADS);
             glVertex2f(backLeftLegX, backLegY);
             glVertex2f(backLeftLegX + legWidth, backLegY);
@@ -58,8 +57,7 @@ void drawChair(float centerX, float baseY, bool facingRight) {
             glVertex2f(backLeftLegX, backLegY + legHeight);
         glEnd();
         
-        // SHAPE 3: FRONT-RIGHT leg (behind seat, front corner on right)
-        glColor3f(0.60f, 0.60f, 0.60f);  // Darker for depth
+        glColor3f(0.65f, 0.65f, 0.68f);
         glBegin(GL_QUADS);
             glVertex2f(frontRightLegX - legWidth, frontLegY);
             glVertex2f(frontRightLegX, frontLegY);
@@ -67,19 +65,14 @@ void drawChair(float centerX, float baseY, bool facingRight) {
             glVertex2f(frontRightLegX - legWidth, frontLegY + legHeight);
         glEnd();
         
-        // SHAPE 4: BACK-RIGHT leg (behind, back corner on right)
-        glColor3f(0.55f, 0.55f, 0.55f);  // Darkest for furthest depth
+        glColor3f(0.60f, 0.60f, 0.63f);
         glBegin(GL_QUADS);
             glVertex2f(backRightLegX - legWidth, backLegY);
             glVertex2f(backRightLegX, backLegY);
             glVertex2f(backRightLegX, backLegY + legHeight);
             glVertex2f(backRightLegX - legWidth, backLegY + legHeight);
         glEnd();
-        
     } else {
-        // RIGHT-FACING CHAIR - show right side legs prominently
-        
-        // SHAPE 1: FRONT-RIGHT leg (most visible, front corner)
         glBegin(GL_QUADS);
             glVertex2f(frontRightLegX - legWidth, frontLegY);
             glVertex2f(frontRightLegX, frontLegY);
@@ -87,7 +80,6 @@ void drawChair(float centerX, float baseY, bool facingRight) {
             glVertex2f(frontRightLegX - legWidth, frontLegY + legHeight);
         glEnd();
         
-        // SHAPE 2: BACK-RIGHT leg (visible, back corner on right side)
         glBegin(GL_QUADS);
             glVertex2f(backRightLegX - legWidth, backLegY);
             glVertex2f(backRightLegX, backLegY);
@@ -95,8 +87,7 @@ void drawChair(float centerX, float baseY, bool facingRight) {
             glVertex2f(backRightLegX - legWidth, backLegY + legHeight);
         glEnd();
         
-        // SHAPE 3: FRONT-LEFT leg (behind seat, front corner on left)
-        glColor3f(0.60f, 0.60f, 0.60f);  // Darker for depth
+        glColor3f(0.65f, 0.65f, 0.68f);
         glBegin(GL_QUADS);
             glVertex2f(frontLeftLegX, frontLegY);
             glVertex2f(frontLeftLegX + legWidth, frontLegY);
@@ -104,8 +95,7 @@ void drawChair(float centerX, float baseY, bool facingRight) {
             glVertex2f(frontLeftLegX, frontLegY + legHeight);
         glEnd();
         
-        // SHAPE 4: BACK-LEFT leg (behind, back corner on left)
-        glColor3f(0.55f, 0.55f, 0.55f);  // Darkest for furthest depth
+        glColor3f(0.60f, 0.60f, 0.63f);
         glBegin(GL_QUADS);
             glVertex2f(backLeftLegX, backLegY);
             glVertex2f(backLeftLegX + legWidth, backLegY);
@@ -114,11 +104,9 @@ void drawChair(float centerX, float baseY, bool facingRight) {
         glEnd();
     }
     
-    float seatY = baseY + legHeight;  // Where seat starts
+    float seatY = baseY + legHeight;
     
-    // ========== SEAT (3 parts: top, front edge, side edges) ==========
-    
-    // Calculate the 4 corners of the seat for consistency
+    // ========== SEAT (dark gray plastic) ==========
     float seatBottomLeftX, seatBottomRightX, seatTopLeftX, seatTopRightX;
     if (facingRight) {
         seatBottomLeftX  = centerX - seatWidth/2 + perspectiveOffset;
@@ -135,50 +123,45 @@ void drawChair(float centerX, float baseY, bool facingRight) {
     float seatTopY = seatY + seatTopThickness;
     float seatFrontLowerY = seatY - seatFrontEdgeHeight;
     
-    // SHAPE 5: Seat top surface (trapezoid - gives 3D perspective)
-    glColor3f(0.35f, 0.35f, 0.35f);  // Light gray
+    glColor3f(0.25f, 0.25f, 0.25f);  // Dark gray seat
     glBegin(GL_QUADS);
-        glVertex2f(seatBottomLeftX, seatY);      // front-left corner
-        glVertex2f(seatBottomRightX, seatY);     // front-right corner
-        glVertex2f(seatTopRightX, seatTopY);     // back-right corner (narrower)
-        glVertex2f(seatTopLeftX, seatTopY);      // back-left corner (narrower)
+        glVertex2f(seatBottomLeftX, seatY);
+        glVertex2f(seatBottomRightX, seatY);
+        glVertex2f(seatTopRightX, seatTopY);
+        glVertex2f(seatTopLeftX, seatTopY);
     glEnd();
     
-    // SHAPE 6: Seat front edge (shows thickness)
-    glColor3f(0.28f, 0.28f, 0.28f);  // Darker gray
+    glColor3f(0.20f, 0.20f, 0.20f);
     glBegin(GL_QUADS);
-        glVertex2f(seatBottomLeftX, seatY);           // top-left
-        glVertex2f(seatBottomRightX, seatY);          // top-right
-        glVertex2f(seatBottomRightX, seatFrontLowerY); // bottom-right
-        glVertex2f(seatBottomLeftX, seatFrontLowerY);  // bottom-left
+        glVertex2f(seatBottomLeftX, seatY);
+        glVertex2f(seatBottomRightX, seatY);
+        glVertex2f(seatBottomRightX, seatFrontLowerY);
+        glVertex2f(seatBottomLeftX, seatFrontLowerY);
     glEnd();
     
-     // SHAPE 7: Seat left side edge (shows depth) - only draw for LEFT-facing chair
     if (facingRight) {
-        glColor3f(0.26f, 0.26f, 0.26f);  // Even darker
+        glColor3f(0.18f, 0.18f, 0.18f);
         glBegin(GL_QUADS);
-            glVertex2f(seatBottomLeftX, seatFrontLowerY);  // front-bottom
-            glVertex2f(seatBottomLeftX, seatY);            // front-top
-            glVertex2f(seatTopLeftX, seatTopY);            // back-top
-            glVertex2f(seatTopLeftX, seatFrontLowerY + seatTopThickness); // back-bottom
+            glVertex2f(seatBottomLeftX, seatFrontLowerY);
+            glVertex2f(seatBottomLeftX, seatY);
+            glVertex2f(seatTopLeftX, seatTopY);
+            glVertex2f(seatTopLeftX, seatFrontLowerY + seatTopThickness);
         glEnd();
     }
     
-    // SHAPE 8: Seat right side edge - only draw for RIGHT-facing chair
     if (!facingRight) {
-        glColor3f(0.26f, 0.26f, 0.26f);
+        glColor3f(0.18f, 0.18f, 0.18f);
         glBegin(GL_QUADS);
-            glVertex2f(seatBottomRightX, seatFrontLowerY);  // front-bottom
-            glVertex2f(seatBottomRightX, seatY);            // front-top
-            glVertex2f(seatTopRightX, seatTopY);            // back-top
-            glVertex2f(seatTopRightX, seatFrontLowerY + seatTopThickness); // back-bottom
+            glVertex2f(seatBottomRightX, seatFrontLowerY);
+            glVertex2f(seatBottomRightX, seatY);
+            glVertex2f(seatTopRightX, seatTopY);
+            glVertex2f(seatTopRightX, seatFrontLowerY + seatTopThickness);
         glEnd();
     }
-    // ========== BACKREST (3 parts: connection, main panel, top edge) ==========
     
+    // ========== BACKREST ==========
     float backrestStartY = seatY + seatTopThickness;
     
-    // Calculate where backrest attaches to seat back edge
     float seatBackLeft, seatBackRight;
     if (facingRight) {
         seatBackLeft = centerX - seatWidth/2;
@@ -188,78 +171,58 @@ void drawChair(float centerX, float baseY, bool facingRight) {
         seatBackRight = centerX + seatWidth/2;
     }
     
-    // SHAPE 9: Small connection piece (connects seat to backrest)
     float connectionHeight = 0.02f;
-    glColor3f(0.32f, 0.32f, 0.32f);
+    glColor3f(0.23f, 0.23f, 0.23f);
     glBegin(GL_QUADS);
-        glVertex2f(seatBackLeft, backrestStartY);              // bottom-left
-        glVertex2f(seatBackRight, backrestStartY);             // bottom-right
-        glVertex2f(seatBackRight, backrestStartY + connectionHeight); // top-right
-        glVertex2f(seatBackLeft, backrestStartY + connectionHeight);  // top-left
+        glVertex2f(seatBackLeft, backrestStartY);
+        glVertex2f(seatBackRight, backrestStartY);
+        glVertex2f(seatBackRight, backrestStartY + connectionHeight);
+        glVertex2f(seatBackLeft, backrestStartY + connectionHeight);
     glEnd();
     
-    // SHAPE 10: Main backrest panel (trapezoid that tilts backward)
     float backrestY = backrestStartY + connectionHeight;
-    glColor3f(0.33f, 0.33f, 0.33f);
+    glColor3f(0.24f, 0.24f, 0.24f);
     glBegin(GL_QUADS);
-        glVertex2f(seatBackLeft, backrestY);                    // bottom-left (attached to seat)
-        glVertex2f(seatBackRight, backrestY);                   // bottom-right (attached to seat)
-        glVertex2f(seatBackRight + tiltDir, backrestY + backrestHeight); // top-right (tilted back)
-        glVertex2f(seatBackLeft + tiltDir, backrestY + backrestHeight);  // top-left (tilted back)
+        glVertex2f(seatBackLeft, backrestY);
+        glVertex2f(seatBackRight, backrestY);
+        glVertex2f(seatBackRight + tiltDir, backrestY + backrestHeight);
+        glVertex2f(seatBackLeft + tiltDir, backrestY + backrestHeight);
     glEnd();
     
-    // SHAPE 11: Backrest top edge (visible because of backward tilt)
-    glColor3f(0.29f, 0.29f, 0.29f);
+    glColor3f(0.21f, 0.21f, 0.21f);
     glBegin(GL_QUADS);
-        glVertex2f(seatBackLeft + tiltDir, backrestY + backrestHeight);  // bottom-left
-        glVertex2f(seatBackRight + tiltDir, backrestY + backrestHeight); // bottom-right
-        glVertex2f(seatBackRight + tiltDir, backrestY + backrestHeight + backrestThickness); // top-right
-        glVertex2f(seatBackLeft + tiltDir, backrestY + backrestHeight + backrestThickness);  // top-left
+        glVertex2f(seatBackLeft + tiltDir, backrestY + backrestHeight);
+        glVertex2f(seatBackRight + tiltDir, backrestY + backrestHeight);
+        glVertex2f(seatBackRight + tiltDir, backrestY + backrestHeight + backrestThickness);
+        glVertex2f(seatBackLeft + tiltDir, backrestY + backrestHeight + backrestThickness);
     glEnd();
     
-    // ========== PILLOW (1 rounded rectangle on backrest) ==========
-    
-    glColor3f(0.0f, 0.0f, 0.5f);  // Navy blue
+    // ========== PILLOW (brighter navy blue) ==========
+    glColor3f(0.25f, 0.30f, 0.50f);  // Brighter navy blue to match photo
     
     float pillowWidth = 0.22f;
     float pillowHeight = 0.22f;
-    float pillowY = backrestY + 0.08f;  // Position on backrest
-    float corner = 0.04f;  // Corner rounding
+    float pillowY = backrestY + 0.08f;
+    float corner = 0.04f;
     
-    float pillowCenterX = centerX + (tiltDir * 0.3f);  // Adjust for backrest tilt
+    float pillowCenterX = centerX + (tiltDir * 0.3f);
     
-    // SHAPE 12: Pillow (polygon with rounded corners - 20+ vertices)
     glBegin(GL_POLYGON);
-        // Bottom edge
         glVertex2f(pillowCenterX - pillowWidth/2 + corner, pillowY - pillowHeight/2);
         glVertex2f(pillowCenterX - pillowWidth/2 + corner * 1.5f, pillowY - pillowHeight/2);
         glVertex2f(pillowCenterX + pillowWidth/2 - corner * 1.5f, pillowY - pillowHeight/2);
         glVertex2f(pillowCenterX + pillowWidth/2 - corner, pillowY - pillowHeight/2);
-        
-        // Bottom-right corner (curved)
         glVertex2f(pillowCenterX + pillowWidth/2, pillowY - pillowHeight/2 + corner);
-        
-        // Right edge
         glVertex2f(pillowCenterX + pillowWidth/2, pillowY - pillowHeight/2 + corner * 1.5f);
         glVertex2f(pillowCenterX + pillowWidth/2, pillowY + pillowHeight/2 - corner * 1.5f);
-        
-        // Top-right corner (curved)
         glVertex2f(pillowCenterX + pillowWidth/2, pillowY + pillowHeight/2 - corner);
-        
-        // Top edge
         glVertex2f(pillowCenterX + pillowWidth/2 - corner, pillowY + pillowHeight/2);
         glVertex2f(pillowCenterX + pillowWidth/2 - corner * 1.5f, pillowY + pillowHeight/2);
         glVertex2f(pillowCenterX - pillowWidth/2 + corner * 1.5f, pillowY + pillowHeight/2);
         glVertex2f(pillowCenterX - pillowWidth/2 + corner, pillowY + pillowHeight/2);
-        
-        // Top-left corner (curved)
         glVertex2f(pillowCenterX - pillowWidth/2, pillowY + pillowHeight/2 - corner);
-        
-        // Left edge
         glVertex2f(pillowCenterX - pillowWidth/2, pillowY + pillowHeight/2 - corner * 1.5f);
         glVertex2f(pillowCenterX - pillowWidth/2, pillowY - pillowHeight/2 + corner * 1.5f);
-        
-        // Bottom-left corner (curved)
         glVertex2f(pillowCenterX - pillowWidth/2, pillowY - pillowHeight/2 + corner);
     glEnd();
 }
@@ -267,49 +230,98 @@ void drawChair(float centerX, float baseY, bool facingRight) {
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
     
-    //============ BACKGROUND ================================
+    // Apply camera transformation
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glScalef(zoomLevel, zoomLevel, 1.0f);
+    glTranslatef(cameraX, cameraY, 0.0f);
     
-    // Draw the upper half light gray
-    glColor3f(0.7f, 0.7f, 0.7f);  // Light gray color
+    //============ BACKGROUND (EXTENDED) ================================
+    // Wall (upper half) - lighter gray to match photo
     glBegin(GL_QUADS);
-        glVertex2f(-1.0f, 0.0f);
-        glVertex2f(1.0f, 0.0f);
-        glVertex2f(1.0f, 1.0f);
-        glVertex2f(-1.0f, 1.0f);
+        glColor3f(0.72f, 0.72f, 0.72f);  // Lighter gray at top
+        glVertex2f(-5.0f, 3.0f);
+        glVertex2f(5.0f, 3.0f);
+        glColor3f(0.76f, 0.76f, 0.76f);  // Even lighter near horizon
+        glVertex2f(5.0f, 0.0f);
+        glVertex2f(-5.0f, 0.0f);
     glEnd();
     
-    // Draw the lower half light brown
-    glColor3f(0.885f, 0.84f, 0.64f);
+    // Floor - lighter tan/beige to match photo
     glBegin(GL_QUADS);
-        glVertex2f(-1.0f, -1.0f);
-        glVertex2f(1.0f, -1.0f);
-        glVertex2f(1.0f, 0.0f);
-        glVertex2f(-1.0f, 0.0f);
+        glColor3f(0.68f, 0.63f, 0.56f);  // Tan at bottom
+        glVertex2f(-5.0f, -3.0f);
+        glVertex2f(5.0f, -3.0f);
+        glColor3f(0.72f, 0.67f, 0.60f);  // Lighter tan near horizon
+        glVertex2f(5.0f, 0.0f);
+        glVertex2f(-5.0f, 0.0f);
     glEnd();
     
-    // Darker transition strip
-    glColor3f(0.75f, 0.7f, 0.5f);
+    // Add carpet pattern (subtle horizontal lines)
+    glColor3f(0.65f, 0.60f, 0.53f);
+    glLineWidth(1.0f);
+    for (float y = -2.8f; y < 0.0f; y += 0.12f) {
+        glBegin(GL_LINES);
+            glVertex2f(-5.0f, y);
+            glVertex2f(5.0f, y);
+        glEnd();
+    }
+    
+    // Baseboard - darker brown
+    glColor3f(0.50f, 0.42f, 0.30f);
     glBegin(GL_QUADS);
-        glVertex2f(-1.0f, 0.05f);
-        glVertex2f(1.0f, 0.05f);
-        glVertex2f(1.0f, -0.05f);
-        glVertex2f(-1.0f, -0.05f);
+        glVertex2f(-5.0f, 0.08f);
+        glVertex2f(5.0f, 0.08f);
+        glVertex2f(5.0f, -0.03f);
+        glVertex2f(-5.0f, -0.03f);
     glEnd();
     
-    //=================== CHAIRS (PROPERLY ALIGNED) ========================
+    //=========================Light Shading (Wall Shadows)========================
     
-    // Left chair - positioned to the left of the round table
-    drawChair(-0.65f, -0.20f, true);  // facingRight = true
+    // Triangle 1 (right side shadow - fully extended)
+    glColor3f(0.55f, 0.55f, 0.55f);
+    glBegin(GL_TRIANGLES);
+        float triHeightVal = 2.5f;  // Much larger height
+        float triBaseY = 2.2f;  // Lowered from 3.0f
+        float triLeftBaseX = -3.0f;  // Extended far left
+        float triRightBaseX = 5.0f;  // Extended to right edge
+        float triCenterX = (triLeftBaseX + triRightBaseX) / 2.0f;
+        float triCenterY = triBaseY - triHeightVal / 3.0f;
+        float triOrigTopX = triCenterX;
+        float triOrigTopY = triBaseY;
+        float triOrigLeftX = triLeftBaseX;
+        float triOrigLeftY = triBaseY - triHeightVal;
+        float triOrigRightX = triRightBaseX;
+        float triOrigRightY = triBaseY - triHeightVal;
+        float triRotTopX = 2 * triCenterX - triOrigTopX;
+        float triRotTopY = 2 * triCenterY - triOrigTopY;
+        float triRotLeftX = 2 * triCenterX - triOrigLeftX;
+        float triRotLeftY = 2 * triCenterY - triOrigLeftY;
+        float triRotRightX = 2 * triCenterX - triOrigRightX;
+        float triRotRightY = 2 * triCenterY - triOrigRightY;
+        glVertex2f(triRotTopX, triRotTopY);
+        glVertex2f(triRotRightX, triRotRightY);
+        glVertex2f(triRotLeftX, triRotLeftY);
+    glEnd();
+
+    // Triangle 2 (left side shadow - fully extended)
+    glBegin(GL_TRIANGLES);
+        float heightTri2 = 2.5f;  // Much larger height
+        float topY = 2.2f;  // Lowered from 3.0f
+        float rightX = 3.5f;  // Moved right (was 3.0f)
+        glVertex2f(-4.5f, topY);  // Moved right (was -5.0f)
+        glVertex2f(-4.5f, topY - heightTri2);
+        glVertex2f(rightX, topY);
+    glEnd();
+    //=================== CHAIRS ========================
+    drawChair(-0.65f, -0.20f, true);
+    drawChair(0.65f, -0.20f, false);
     
-    // Right chair - positioned to the right of the round table
-    drawChair(0.65f, -0.20f, false);  // facingRight = false
-    
-    //====================== RECTANGLE TABLE ==============================
-    
+    //====================== RECTANGLE TABLE (front table) ==============================
     float offset = -0.15f;
    
-    // Draw the trapezoid (table top)
-    glColor3f(0.82f, 0.71f, 0.55f);
+    // Table top with wood texture
+    glColor3f(0.82f, 0.75f, 0.60f);  // Light wood
     glBegin(GL_POLYGON);
         glVertex2f(-0.7f, offset);
         glVertex2f(0.7f, offset);
@@ -317,8 +329,18 @@ void display() {
         glVertex2f(-0.9f, offset - 0.3f);
     glEnd();
     
-    // Draw rectangle (table body)
-    glColor3f(0.69f, 0.58f, 0.43f);
+    // Wood grain lines
+    glColor3f(0.78f, 0.71f, 0.56f);
+    for (int i = 0; i < 5; i++) {
+        float x = -0.6f + i * 0.3f;
+        glBegin(GL_LINES);
+            glVertex2f(x, offset - 0.02f);
+            glVertex2f(x + 0.15f, offset - 0.28f);
+        glEnd();
+    }
+    
+    // Side of table
+    glColor3f(0.72f, 0.65f, 0.52f);
     glBegin(GL_QUADS);
         glVertex2f(-0.9f, offset - 0.3f);
         glVertex2f(0.9f, offset - 0.3f);
@@ -326,8 +348,8 @@ void display() {
         glVertex2f(-0.9f, offset - 0.7f);
     glEnd();
     
-    // Draw inner rectangle
-    glColor3f(0.55f, 0.45f, 0.3f);
+    // Inner rectangle (shelf)
+    glColor3f(0.65f, 0.58f, 0.48f);
     glBegin(GL_QUADS);
         glVertex2f(-0.8f, offset - 0.35f);
         glVertex2f(0.8f, offset - 0.35f);
@@ -335,10 +357,34 @@ void display() {
         glVertex2f(-0.8f, offset - 0.65f);
     glEnd();
     
-    // Legs
-    glColor3f(0.5f, 0.5f, 0.5f);
+    //===============Inside Shadow (trapezoid in shelf)================
+    float baseY_trap = offset - 0.65f;
+    float height_trap = (0.65f - 0.35f) / 2 + 0.05;
+    float topY_trap = baseY_trap + height_trap;
+    float leftX_trap = -0.8f;
+    float rightX_trap = 0.8f;
+    float topLeftX_trap = -0.7f;
+    float topRightX_trap = 0.7f;
 
-    // Left leg
+    glColor3f(0.50f, 0.40f, 0.25f);
+    glBegin(GL_POLYGON);
+        glVertex2f(leftX_trap, baseY_trap);
+        glVertex2f(rightX_trap, baseY_trap);
+        glVertex2f(topRightX_trap, topY_trap);
+        glVertex2f(topLeftX_trap, topY_trap);
+    glEnd();
+
+    //=======================Table Shadow (under front table)===========================
+    glColor3f(0.55f, 0.55f, 0.55f);
+    glBegin(GL_QUADS);
+        glVertex2f(-0.66f, offset - 0.7f);
+        glVertex2f(0.87f, offset - 0.7f);
+        glVertex2f(0.87f, offset - 0.78f);
+        glVertex2f(-0.66f, offset - 0.78f);
+    glEnd();
+    
+    // Legs with metallic gray
+    glColor3f(0.75f, 0.75f, 0.75f);
     glBegin(GL_QUADS);
         glVertex2f(-0.80f, offset - 0.7f);
         glVertex2f(-0.66f, offset - 0.7f);
@@ -346,7 +392,6 @@ void display() {
         glVertex2f(-0.80f, offset - 0.82f);
     glEnd();
 
-    // Right leg
     glBegin(GL_QUADS);
         glVertex2f(0.66f, offset - 0.7f);
         glVertex2f(0.80f, offset - 0.7f);
@@ -354,10 +399,10 @@ void display() {
         glVertex2f(0.66f, offset - 0.82f);
     glEnd();
     
-    //==================== CIRCLE TABLE ===========================
+    //==================== CIRCLE TABLE (back table) ===========================
     
-    // Pedestal
-    glColor3f(0.75f, 0.75f, 0.75f);
+    // Pedestal - metallic
+    glColor3f(0.78f, 0.78f, 0.80f);
     glBegin(GL_QUADS);
         glVertex2f(-0.05f, offset);
         glVertex2f(0.05f, offset);
@@ -365,8 +410,8 @@ void display() {
         glVertex2f(-0.05f, offset + 0.45f);
     glEnd();
     
-    // Table top rim
-    glColor3f(0.33f, 0.33f, 0.33f);
+    // Table top rim (darker edge)
+    glColor3f(0.28f, 0.28f, 0.28f);
     int numSegments = 100;
     float radiusX = 0.55f;
     float radiusY = 0.07f;
@@ -381,8 +426,8 @@ void display() {
     }
     glEnd();
     
-    // Table top surface
-    glColor3f(0.83f, 0.83f, 0.83f);
+    // Table top surface (light gray)
+    glColor3f(0.80f, 0.80f, 0.82f);
     float innerRadiusX = 0.52f;
     float innerRadiusY = 0.05f;
     float redOvalOffset = 0.02f;
@@ -396,9 +441,8 @@ void display() {
     }
     glEnd();
     
-    //=================== BOOK =========================
-    
-    glColor3f(0.0f, 0.0f, 0.0f);
+    //=================== BOOK (BLACK) =========================
+    glColor3f(0.08f, 0.08f, 0.08f);  // Very dark gray/black
     float rectWidth = 0.22f;
     float rectHeight = 0.28f;
     float rectOffsetY = ovalCenterY + radiusY - 0.05f;
@@ -410,47 +454,203 @@ void display() {
         glVertex2f(rectWidth / 2 + rectOffsetX, rectOffsetY + rectHeight);
         glVertex2f(-rectWidth / 2 + rectOffsetX, rectOffsetY + rectHeight);
     glEnd();
-
-    //============= SWITCH =====================
     
-    glColor3f(1.0f, 1.0f, 1.0f);
-    float SWrectWidth = 0.06f;
-    float SWrectHeight = 0.09f;
-    float SWrectOffsetY = ovalCenterY + radiusY - 0.3f;
-    float SWrectOffsetX = -0.25f;
-
+    // Book spine shadow
+    glColor3f(0.05f, 0.05f, 0.05f);
     glBegin(GL_QUADS);
-        glVertex2f(-SWrectWidth / 2 + SWrectOffsetX, SWrectOffsetY);
-        glVertex2f(SWrectWidth / 2 + SWrectOffsetX, SWrectOffsetY);
-        glVertex2f(SWrectWidth / 2 + SWrectOffsetX, SWrectOffsetY + SWrectHeight);
-        glVertex2f(-SWrectWidth / 2 + SWrectOffsetX, SWrectOffsetY + SWrectHeight);
-    glEnd();
-    
-    //============== SOCKET =====================
-    
-    glColor3f(1.0f, 1.0f, 1.0f);
-    float LrectWidth = 0.05f;
-    float LrectHeight = 0.08f;
-    float LrectOffsetY = ovalCenterY + radiusY + 0.2f;
-    float LrectOffsetX = 0.85f;
-
-    glBegin(GL_QUADS);
-        glVertex2f(-LrectWidth / 2 + LrectOffsetX, LrectOffsetY);
-        glVertex2f(LrectWidth / 2 + LrectOffsetX, LrectOffsetY);
-        glVertex2f(LrectWidth / 2 + LrectOffsetX, LrectOffsetY + LrectHeight);
-        glVertex2f(-LrectWidth / 2 + LrectOffsetX, LrectOffsetY + LrectHeight);
+        glVertex2f(-rectWidth / 2 + rectOffsetX, rectOffsetY);
+        glVertex2f(-rectWidth / 2 + rectOffsetX + 0.02f, rectOffsetY);
+        glVertex2f(-rectWidth / 2 + rectOffsetX + 0.02f, rectOffsetY + rectHeight);
+        glVertex2f(-rectWidth / 2 + rectOffsetX, rectOffsetY + rectHeight);
     glEnd();
 
+    //============= OUTLET ON WALL (right side) =====================
+    glColor3f(0.88f, 0.88f, 0.88f);  // Light gray outlet
+    float outletWidth = 0.06f;
+    float outletHeight = 0.09f;
+    float outletY = ovalCenterY + radiusY + 0.2f;
+    float outletX = 0.85f;
+
+    glBegin(GL_QUADS);
+        glVertex2f(-outletWidth / 2 + outletX, outletY);
+        glVertex2f(outletWidth / 2 + outletX, outletY);
+        glVertex2f(outletWidth / 2 + outletX, outletY + outletHeight);
+        glVertex2f(-outletWidth / 2 + outletX, outletY + outletHeight);
+    glEnd();
+    
+    // Outlet holes (darker)
+    glColor3f(0.3f, 0.3f, 0.3f);
+    float holeSize = 0.015f;
+    glBegin(GL_QUADS);
+        glVertex2f(outletX - 0.015f, outletY + 0.055f);
+        glVertex2f(outletX - 0.015f + holeSize, outletY + 0.055f);
+        glVertex2f(outletX - 0.015f + holeSize, outletY + 0.055f + holeSize);
+        glVertex2f(outletX - 0.015f, outletY + 0.055f + holeSize);
+    glEnd();
+    glBegin(GL_QUADS);
+        glVertex2f(outletX + 0.0f, outletY + 0.055f);
+        glVertex2f(outletX + 0.0f + holeSize, outletY + 0.055f);
+        glVertex2f(outletX + 0.0f + holeSize, outletY + 0.055f + holeSize);
+        glVertex2f(outletX + 0.0f, outletY + 0.055f + holeSize);
+    glEnd();
+    
+    //============= SWITCH ON WALL (left of laptop) =====================
+    glColor3f(0.92f, 0.92f, 0.92f);
+    float switchWidth = 0.06f;
+    float switchHeight = 0.09f;
+    float switchY = ovalCenterY + radiusY - 0.3f;
+    float switchX = -0.25f;
+
+    glBegin(GL_QUADS);
+        glVertex2f(-switchWidth / 2 + switchX, switchY);
+        glVertex2f(switchWidth / 2 + switchX, switchY);
+        glVertex2f(switchWidth / 2 + switchX, switchY + switchHeight);
+        glVertex2f(-switchWidth / 2 + switchX, switchY + switchHeight);
+    glEnd();
+    
+    // Switch toggle
+    glColor3f(0.85f, 0.82f, 0.78f);
+    glBegin(GL_QUADS);
+        glVertex2f(switchX - 0.015f, switchY + 0.035f);
+        glVertex2f(switchX + 0.015f, switchY + 0.035f);
+        glVertex2f(switchX + 0.015f, switchY + 0.055f);
+        glVertex2f(switchX - 0.015f, switchY + 0.055f);
+    glEnd();
+    
+    //================ LAPTOP (SIDE VIEW) =====================
+    // Coordinates for trapezoid (screen)
+    float trapTopRightX = rectOffsetX - rectWidth / 2 - 0.05f;
+    float trapTopLeftX = trapTopRightX - 0.15f;
+    float trapBottomRightX = trapTopRightX + 0.05f;
+    float trapBottomLeftX = trapTopLeftX - 0.05f;
+
+    float trapTopY = ovalCenterY + radiusY + 0.01f;
+    float trapBottomY = trapTopY - 0.08f;
+
+    float vertices[4][2] = {
+        {trapTopLeftX, trapTopY},
+        {trapTopRightX, trapTopY},
+        {trapBottomRightX, trapBottomY},
+        {trapBottomLeftX, trapBottomY}
+    };
+
+    float centerX = (vertices[0][0] + vertices[1][0] + vertices[2][0] + vertices[3][0]) / 4.0f;
+    float centerY = (vertices[0][1] + vertices[1][1] + vertices[2][1] + vertices[3][1]) / 4.0f;
+
+    float shiftX = -0.15f;
+    float shiftY = 0.12f;
+
+    float rotatedVertices[4][2];
+    for (int i = 0; i < 4; i++) {
+        float x = vertices[i][0];
+        float y = vertices[i][1];
+        rotatedVertices[i][0] = centerX + (y - centerY) + shiftX;
+        rotatedVertices[i][1] = centerY - (x - centerX) + shiftY;
+    }
+    
+    // Draw base (keyboard part - parallelogram)
+    float baseLeftX = rotatedVertices[3][0];
+    float baseRightX = rotatedVertices[2][0];
+    float baseY = (rotatedVertices[2][1] + rotatedVertices[3][1]) / 2.0f;
+
+    float shiftDown = 0.07f;
+    float topLength = 0.15f;
+    float bottomLength = 0.25f;
+    float height = 0.07f;
+
+    float baseCenterX = (baseLeftX + baseRightX) / 2.0f;
+
+    float bottomTrapTopLeftX = baseCenterX - topLength / 2.0f;
+    float bottomTrapTopRightX = baseCenterX + topLength / 2.0f;
+    float bottomTrapTopY = baseY - shiftDown;
+
+    float bottomTrapBottomLeftX = bottomTrapTopLeftX - (bottomLength - topLength) / 2.0f;
+    float bottomTrapBottomRightX = bottomTrapTopRightX - (bottomLength - topLength) / 2.0f;
+    float bottomTrapBottomY = bottomTrapTopY - height;
+
+    glColor3f(0.2f, 0.2f, 0.2f);
+    glBegin(GL_POLYGON);
+        glVertex2f(bottomTrapTopLeftX, bottomTrapTopY);
+        glVertex2f(bottomTrapTopRightX, bottomTrapTopY);
+        glVertex2f(bottomTrapTopRightX, bottomTrapBottomY);
+        glVertex2f(bottomTrapBottomLeftX, bottomTrapBottomY);
+    glEnd();
+
+    //Draw screen straight skinny rectangle)
+    glColor3f(0.2f, 0.2f, 0.2f);
+    glBegin(GL_POLYGON);
+        glVertex2f(rotatedVertices[0][0], rotatedVertices[0][1]);
+        glVertex2f(rotatedVertices[1][0], rotatedVertices[1][1]);
+        glVertex2f(rotatedVertices[2][0], rotatedVertices[2][1]);
+        glVertex2f(rotatedVertices[3][0], rotatedVertices[3][1]);
+    glEnd();
+
+    // // Hinge (thin black rectangle)
+    // float rectHeight2 = 0.015f;
+    // float rectLeftX = bottomTrapBottomLeftX;
+    // float rectRightX = bottomTrapBottomRightX;
+    // float rectTopY = bottomTrapBottomY;
+    // float rectBottomY = rectTopY - rectHeight2;
+
+    // glColor3f(0.0f, 0.0f, 0.0f);
+    // glBegin(GL_POLYGON);
+    //     glVertex2f(rectLeftX, rectTopY);
+    //     glVertex2f(rectRightX, rectTopY);
+    //     glVertex2f(rectRightX, rectBottomY);
+    //     glVertex2f(rectLeftX, rectBottomY);
+    // glEnd();
+      
     glFlush();
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    float moveSpeed = 0.1f / zoomLevel;
+    
+    switch(key) {
+        case 'w': case 'W':
+            cameraY -= moveSpeed;
+            if (cameraY > MAX_Y) cameraY = MAX_Y;
+            break;
+        case 's': case 'S':
+            cameraY += moveSpeed;
+            if (cameraY < MIN_Y) cameraY = MIN_Y;
+            break;
+        case 'a': case 'A':
+            cameraX += moveSpeed;
+            if (cameraX < MIN_X) cameraX = MIN_X;
+            break;
+        case 'd': case 'D':
+            cameraX -= moveSpeed;
+            if (cameraX > MAX_X) cameraX = MAX_X;
+            break;
+        case 'q': case 'Q':
+            zoomLevel *= 1.1f;
+            break;
+        case 'e': case 'E':
+            zoomLevel /= 1.1f;
+            if (zoomLevel < 0.1f) zoomLevel = 0.1f;
+            break;
+        case 'r': case 'R':
+            cameraX = 0.0f;
+            cameraY = 0.0f;
+            zoomLevel = 1.0f;
+            break;
+        case 27:
+            exit(0);
+            break;
+    }
+    
+    glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(800, 400);
-    glutCreateWindow("Scene with 4-Legged Chairs");
+    glutCreateWindow("Study Room Scene - WASD to move, QE to zoom, R to reset");
 
     glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
